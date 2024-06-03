@@ -41,16 +41,14 @@ def load_data_from_spreadsheet():
         "client_x509_cert_url": st.secrets["GOOGLE_CREDENTIALS"]["client_x509_cert_url"]
     }
 
-    credentials = Credentials.from_service_account_info(
-        google_credentials, scopes=scopes
-    )
+    # secrets.tomlから認証情報を取得
+    credentials = st.secrets["GOOGLE_CREDENTIALS"]
 
-    gc = gspread.authorize(credentials)
+    gc = gspread.service_account_from_dict(credentials)
     SP_SHEET_KEY = st.secrets["SP_SHEET_KEY"]
     sh = gc.open_by_key(SP_SHEET_KEY)
 
     # 物件データの読み込み
-    sh = gc.open_by_key(SP_SHEET_KEY)
     property_worksheet = sh.worksheet('シート1')  # 物件情報シート
     property_data = property_worksheet.get_all_values()
     property_df = pd.DataFrame(property_data[1:], columns=property_data[0])
