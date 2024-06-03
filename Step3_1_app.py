@@ -10,7 +10,6 @@ from geopy.geocoders import Nominatim
 import folium
 from streamlit_folium import folium_static
 
-SP_SHEET = 'シート1'  # シート名
 
 # セッション状態の初期化
 if 'show_all' not in st.session_state:
