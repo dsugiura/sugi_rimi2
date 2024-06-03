@@ -29,7 +29,7 @@ def load_data_from_spreadsheet():
     ]
 
     # secrets.tomlから認証情報を取得
-    google_credentials = {
+    GOOGLE_CREDENTIALS = {
         "type": st.secrets["GOOGLE_CREDENTIALS"]["type"],
         "project_id": st.secrets["GOOGLE_CREDENTIALS"]["project_id"],
         "private_key_id": st.secrets["GOOGLE_CREDENTIALS"]["private_key_id"],
@@ -45,8 +45,9 @@ def load_data_from_spreadsheet():
     credentials = Credentials.from_service_account_info(
         google_credentials, scopes=scopes
     )
+
     gc = gspread.authorize(credentials)
-    SP_SHEET_KEY = st.secrets["SP_SHEET_KEY"]
+    SP_SHEET_KEY = st.secrets["spreadsheet_id"]
     sh = gc.open_by_key(SP_SHEET_KEY)
 
     # 物件データの読み込み
