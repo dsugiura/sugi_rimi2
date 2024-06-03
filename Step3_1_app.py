@@ -30,19 +30,21 @@ def load_data_from_spreadsheet():
 
     # secrets.tomlから認証情報を取得
     google_credentials = {
-        "type": "service_account",
-        "project_id": "fudousanapp-424614",
-        "private_key_id": os.getenv("GOOGLE_PRIVATE_KEY_ID"),
-        "private_key": os.getenv("GOOGLE_PRIVATE_KEY").replace('\\n', '\n'),
-        "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
-        "client_id": os.getenv("GOOGLE_CLIENT_ID"),
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.getenv("GOOGLE_CLIENT_X509_CERT_URL")
+        "type": st.secrets["GOOGLE_CREDENTIALS"]["type"],
+        "project_id": st.secrets["GOOGLE_CREDENTIALS"]["project_id"],
+        "private_key_id": st.secrets["GOOGLE_CREDENTIALS"]["private_key_id"],
+        "private_key": st.secrets["GOOGLE_CREDENTIALS"]["private_key"],
+        "client_email": st.secrets["GOOGLE_CREDENTIALS"]["client_email"],
+        "client_id": st.secrets["GOOGLE_CREDENTIALS"]["client_id"],
+        "auth_uri": st.secrets["GOOGLE_CREDENTIALS"]["auth_uri"],
+        "token_uri": st.secrets["GOOGLE_CREDENTIALS"]["token_uri"],
+        "auth_provider_x509_cert_url": st.secrets["GOOGLE_CREDENTIALS"]["auth_provider_x509_cert_url"],
+        "client_x509_cert_url": st.secrets["GOOGLE_CREDENTIALS"]["client_x509_cert_url"]
     }
 
-    credentials = Credentials.from_service_account_info(google_credentials, scopes=scopes)
+    credentials = Credentials.from_service_account_info(
+        google_credentials, scopes=scopes
+    )
     gc = gspread.authorize(credentials)
     SP_SHEET_KEY = st.secrets["SP_SHEET_KEY"]
     sh = gc.open_by_key(SP_SHEET_KEY)
