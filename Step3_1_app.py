@@ -10,7 +10,6 @@ from geopy.geocoders import Nominatim
 import folium
 from streamlit_folium import folium_static
 
-
 # セッション状態の初期化
 if 'show_all' not in st.session_state:
     st.session_state['show_all'] = False  # 初期状態は地図上の物件のみを表示
@@ -19,34 +18,30 @@ if 'show_all' not in st.session_state:
 def toggle_show_all():
     st.session_state['show_all'] = not st.session_state['show_all']
 
+# Streamlit_Shere_Sercret環境変数から認証情報を取得
+SPREADSHEET_ID = st.secrets["SPREADSHEET"]["ID"]
+SERVICE_ACCOUNT_INFO = st.secrets["SERVICE_ACCOUNT"]
+SP_SHEET = 'シート1'  # シート名
 
 # スプレッドシートからデータを読み込む関数
 def load_data_from_spreadsheet():
+    # googleスプレッドシートの認証 jsonファイル読み込み(key値はGCPから取得)
+    SP_CREDENTIAL_FILE = SERVICE_ACCOUNT_INFO
+    
     scopes = [
         'https://www.googleapis.com/auth/spreadsheets',
         'https://www.googleapis.com/auth/drive'
     ]
 
-    # secrets.tomlから認証情報を取得
-    google_credentials = {
-        "type": st.secrets["GOOGLE_CREDENTIALS"]["type"],
-        "project_id": st.secrets["GOOGLE_CREDENTIALS"]["project_id"],
-        "private_key_id": st.secrets["GOOGLE_CREDENTIALS"]["private_key_id"],
-        "private_key": st.secrets["GOOGLE_CREDENTIALS"]["private_key"],
-        "client_email": st.secrets["GOOGLE_CREDENTIALS"]["client_email"],
-        "client_id": st.secrets["GOOGLE_CREDENTIALS"]["client_id"],
-        "auth_uri": st.secrets["GOOGLE_CREDENTIALS"]["auth_uri"],
-        "token_uri": st.secrets["GOOGLE_CREDENTIALS"]["token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["GOOGLE_CREDENTIALS"]["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["GOOGLE_CREDENTIALS"]["client_x509_cert_url"]
-    }
+    credentials = Credentials.from_service_account_info(
+        SP_CREDENTIAL_FILE,
+        scopes=scopes
+    )
+    gc = gspread.authorize(credentials)
 
-    # secrets.tomlから認証情報を取得
-    credentials = st.secrets["GOOGLE_CREDENTIALS"]
+    SP_SHEET_KEY = SPREADSHEET_ID # d/〇〇/edit の〇〇部分
+    sh  = gc.open_by_key(SP_SHEET_KEY)
 
-    gc = gspread.service_account_from_dict(credentials)
-    SP_SHEET_KEY = st.secrets["SP_SHEET_KEY"]
-    sh = gc.open_by_key(SP_SHEET_KEY)
 
     # 物件データの読み込み
     property_worksheet = sh.worksheet('シート1')  # 物件情報シート
